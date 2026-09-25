@@ -1,11 +1,7 @@
 # app
 
-> **First thing: rename `app` to your project.** It appears in this file, in
-> `pyproject.toml` (`name`, `[project.scripts]`, `[tool.hatch.build.targets.wheel]`),
-> in the folder `src/app/`, and in the imports under `tests/`. Session 5's lab walks
-> you through it.
+The program is a library manager designed for one user. Allows the user to borrow a book
 
-One or two sentences on what your program does and who it is for.
 
 ## Install
 
@@ -21,9 +17,10 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 ## Run
 
 ```
-uv run app --help
-uv run app greet World
-uv run app greet World --count 3
+uv run library-manager --help
+uv run library-manager borrow --help
+uv run library-manager borrow 1984
+
 ```
 
 ## Develop
