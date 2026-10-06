@@ -44,3 +44,5 @@ src/app/          your package — importable, installable, not just a script
 tests/            pytest tests, mirroring src/
 pyproject.toml    dependencies and tool configuration — the single source of truth
 ```
+## Shell
+line 7: typer.Typer(), line 10: Path(), line 20: pd.read_csv(), line 24: typer.echo(), line 25: typer.Exit(), line 28: typer.echo(), line 29: typer.Exit(), line 33: df.to_csv(), line 34: typer.echo()
