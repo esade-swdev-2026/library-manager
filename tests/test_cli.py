@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -8,9 +8,10 @@ from typer.testing import CliRunner
 from library_manager import cli
 from library_manager.book_class import Book
 from library_manager.cli import app
-from library_manager.library import find_book
+from library_manager.library import find_book, Library
 
 runner = CliRunner()
+LOAN_DAYS = 30
 
 
 @pytest.fixture
@@ -102,3 +103,67 @@ def test_find_existing_book_ignores_case() -> None:
 
     assert find_book([book], "Dune") is book
     assert find_book([book], "dUNE") is book
+
+def test_borrow_unavailable_book_fails() -> None:
+    result = runner.invoke(app, ["borrow", "Unexisting Book"])
+    assert result.exit_code == 1
+    assert "Book not available" in result.stderr
+
+def test_borrow_book_with_no_stock_fails() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.quantity = 0
+    library.save()
+
+    result = runner.invoke(app, ["borrow", book.name])
+    assert result.exit_code == 1
+    assert "No existences available" in result.stderr
+
+def test_borrow_available_book_decreases_quantity() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.quantity = 1
+    library.borrow(book.name)
+    assert book.quantity == 0
+    
+def test_borrow_available_book_creates_correct_due_date() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.quantity = 1
+    library.borrow(book.name)
+    assert book.due_date == date.today() + timedelta(days=LOAN_DAYS)
+
+def test_return_book_with_None_book_fails() -> None:
+    result = runner.invoke(app, ["return", "Unexisting Book"])
+    assert result.exit_code == 1
+    assert "Book not available" in result.stderr
+
+def test_return_book_with_None_date_fails() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.due_date = None
+    library.save()
+
+    result = runner.invoke(app, ["return", book.name])
+    assert result.exit_code == 1
+    assert "This book is not borrowed" in result.stderr
+
+def test_return_book_overdue_date() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.due_date = date.today() - timedelta(days = 1)
+    library.save()
+
+    is_late = library.return_book(book.name)
+    assert is_late == True
+
+def test_return_book_correctly_increases_quantity() -> None:
+    library = Library(Path(__file__).parent.parent / "src/library_manager/books-2.csv")
+    book = library.books[0]
+    book.quantity = 1
+    book.due_date = date.today()
+    library.save()
+
+    library.return_book(book.name)
+    assert book.quantity == 2
+
