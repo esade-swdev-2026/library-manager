@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
@@ -5,7 +6,9 @@ import pytest
 from typer.testing import CliRunner
 
 from library_manager import cli
+from library_manager.book_class import Book
 from library_manager.cli import app
+from library_manager.library import find_book
 
 runner = CliRunner()
 
@@ -84,3 +87,18 @@ def test_return_book_not_borrowed_fails(books_csv: Path) -> None:
 
     book = pd.read_csv(books_csv).iloc[0]
     assert book["quantity"] == 1
+
+
+def test_find_unexisting_book_returns_none() -> None:
+    books = [
+        Book("1984", "George Orwell", 1, "Dystopian", "English", "A man rebels.", None),
+    ]
+
+    assert find_book(books, "Unexisting Book") is None
+
+
+def test_find_existing_book_ignores_case() -> None:
+    book = Book("Dune", "Frank Herbert", 0, "Sci-Fi", "English", "Desert.", date(2026, 10, 25))
+
+    assert find_book([book], "Dune") is book
+    assert find_book([book], "dUNE") is book
