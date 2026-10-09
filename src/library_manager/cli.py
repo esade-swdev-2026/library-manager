@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from pathlib import Path
-from book_class import Book
+from library_manager.book_class import Book
 
 import pandas as pd
 import typer
@@ -17,9 +17,9 @@ def main() -> None:
 
 
 @app.command()
-def borrow(book: Book) -> None:
-    df = pd.read_csv(BOOKS_CSV, dtype={"name": "string", "due_date": "datetime.date"})
-    match = df["name"].str.lower() == book.name.lower()
+def borrow(book: str) -> None:
+    df = pd.read_csv(BOOKS_CSV, dtype={"name": "string", "due_date": "string"})
+    match = df["name"].str.lower() == book.lower()
 
     if not match.any():
         typer.echo("Book not available", err=True)
