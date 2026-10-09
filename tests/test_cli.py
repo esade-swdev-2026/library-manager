@@ -18,6 +18,8 @@ def books_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "name,author,quantity,genre,language,description,due_date\n"
         "1984,George Orwell,1,Dystopian,English,A man rebels against the state.,\n"
         "Dune,Frank Herbert,0,Sci-Fi,English,A noble family fights over a desert planet.,\n"
+        "Emma,Jane Austen,0,Romance,English,A young matchmaker meddles in love.,2099-01-01\n"
+        "Dracula,Bram Stoker,1,Horror,English,A vampire travels to England.,2000-01-01\n"
     )
     monkeypatch.setattr(cli, "BOOKS_CSV", path)
     return path
@@ -47,3 +49,38 @@ def test_failed_borrow_leaves_due_date_empty(books_csv: Path) -> None:
     book = pd.read_csv(books_csv).iloc[1]
     assert book["quantity"] == 0
     assert pd.isna(book["due_date"])
+
+
+def test_return_on_time(books_csv: Path) -> None:
+    result = runner.invoke(app, ["return", "Emma"])
+    assert result.exit_code == 0
+    assert "Thank you for returning the book on time!" in result.stdout
+
+    book = pd.read_csv(books_csv).iloc[2]
+    assert book["quantity"] == 1
+    assert pd.isna(book["due_date"])
+
+
+def test_return_late_is_fined(books_csv: Path) -> None:
+    result = runner.invoke(app, ["return", "Dracula"])
+    assert result.exit_code == 0
+    assert "You returned the book late, you will be fined" in result.stdout
+
+    book = pd.read_csv(books_csv).iloc[3]
+    assert book["quantity"] == 2
+    assert pd.isna(book["due_date"])
+
+
+def test_return_unknown_book_fails(books_csv: Path) -> None:
+    result = runner.invoke(app, ["return", "Harry Potter"])
+    assert result.exit_code == 1
+    assert "Book not available" in result.stderr
+
+
+def test_return_book_not_borrowed_fails(books_csv: Path) -> None:
+    result = runner.invoke(app, ["return", "1984"])
+    assert result.exit_code == 1
+    assert "This book is not borrowed" in result.stderr
+
+    book = pd.read_csv(books_csv).iloc[0]
+    assert book["quantity"] == 1
