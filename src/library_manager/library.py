@@ -9,6 +9,13 @@ from library_manager.book_class import Book
 LOAN_DAYS = 30
 
 
+def find_book(books: list[Book], name: str) -> Book | None:
+    for book in books:
+        if book.name.lower() == name.lower():
+            return book
+    return None
+
+
 class Library:
     def __init__(self, csv_path: Path) -> None:
         self.csv_path = csv_path
@@ -28,10 +35,7 @@ class Library:
             )
 
     def find(self, name: str) -> Book | None:
-        for book in self.books:
-            if book.name.lower() == name.lower():
-                return book
-        return None
+        return find_book(self.books, name)
 
     def save(self) -> None:
         rows = []
