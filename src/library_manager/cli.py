@@ -1,8 +1,10 @@
+from datetime import date
 from pathlib import Path
 
 import typer
 
 from library_manager.library import Library
+from library_manager.storage import load_books, save_books
 
 app = typer.Typer(help="A terminal library manager.")
 
@@ -17,23 +19,25 @@ def main() -> None:
 
 @app.command()
 def borrow(book: str) -> None:
-    library = Library(BOOKS_CSV)
+    library = Library(load_books(BOOKS_CSV))
     try:
-        library.borrow(book)
+        library.borrow(book, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
+    save_books(BOOKS_CSV, library.books)
     typer.echo("You have successfully borrowed the book")
 
 
 @app.command("return")
 def return_book(book: str) -> None:
-    library = Library(BOOKS_CSV)
+    library = Library(load_books(BOOKS_CSV))
     try:
-        late = library.return_book(book)
+        late = library.return_book(book, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
+    save_books(BOOKS_CSV, library.books)
 
     if late:
         typer.echo("You returned the book late, you will be fined")

@@ -15,5 +15,5 @@ class Book:
     def is_available(self) -> bool:
         return self.quantity > 0
 
-    def is_overdue(self) -> bool:
-        return self.due_date is not None and date.today() > self.due_date
+    def is_overdue(self, today: date) -> bool:
+        return self.due_date is not None and today > self.due_date

@@ -1,43 +1,43 @@
-from pathlib import Path
+from datetime import date
 
-import pandas as pd
-from typer.testing import CliRunner
+import pytest
 
-from library_manager.cli import app
-
-runner = CliRunner()
+from library_manager.library import Library
 
 
-def test_return_on_time(books_csv: Path) -> None:
-    result = runner.invoke(app, ["return", "Emma"])
-    assert result.exit_code == 0
-    assert "Thank you for returning the book on time!" in result.stdout
+def test_return_on_time(library: Library, today: date) -> None:
+    late = library.return_book("Emma", today)
 
-    book = pd.read_csv(books_csv).iloc[2]
-    assert book["quantity"] == 1
-    assert pd.isna(book["due_date"])
-
-
-def test_return_late_is_fined(books_csv: Path) -> None:
-    result = runner.invoke(app, ["return", "Dracula"])
-    assert result.exit_code == 0
-    assert "You returned the book late, you will be fined" in result.stdout
-
-    book = pd.read_csv(books_csv).iloc[3]
-    assert book["quantity"] == 2
-    assert pd.isna(book["due_date"])
+    assert late is False
+    book = library.find("Emma")
+    assert book is not None
+    assert book.quantity == 1
+    assert book.due_date is None
 
 
-def test_return_unknown_book_fails(books_csv: Path) -> None:
-    result = runner.invoke(app, ["return", "Harry Potter"])
-    assert result.exit_code == 1
-    assert "Book not available" in result.stderr
+def test_return_on_due_date_is_on_time(library: Library, today: date) -> None:
+    assert library.return_book("Ulysses", today) is False
 
 
-def test_return_book_not_borrowed_fails(books_csv: Path) -> None:
-    result = runner.invoke(app, ["return", "1984"])
-    assert result.exit_code == 1
-    assert "This book is not borrowed" in result.stderr
+def test_return_late(library: Library, today: date) -> None:
+    late = library.return_book("Dracula", today)
 
-    book = pd.read_csv(books_csv).iloc[0]
-    assert book["quantity"] == 1
+    assert late is True
+    book = library.find("Dracula")
+    assert book is not None
+    assert book.quantity == 2
+    assert book.due_date is None
+
+
+def test_return_unknown_book_fails(library: Library, today: date) -> None:
+    with pytest.raises(ValueError, match="Book not available"):
+        library.return_book("Harry Potter", today)
+
+
+def test_return_book_not_borrowed_fails(library: Library, today: date) -> None:
+    with pytest.raises(ValueError, match="This book is not borrowed"):
+        library.return_book("1984", today)
+
+    book = library.find("1984")
+    assert book is not None
+    assert book.quantity == 1
