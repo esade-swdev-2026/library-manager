@@ -3,6 +3,7 @@ from pathlib import Path
 
 import typer
 
+from library_manager.interface import print_terminal
 from library_manager.library import Library
 from library_manager.storage import load_books, save_books
 
@@ -43,6 +44,11 @@ def return_book(book: str) -> None:
         typer.echo("You returned the book late, you will be fined")
     else:
         typer.echo("Thank you for returning the book on time!")
+
+
+@app.command("show")
+def show() -> None:
+    print_terminal(BOOKS_CSV)
 
 
 if __name__ == "__main__":
