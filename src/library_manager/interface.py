@@ -17,6 +17,7 @@ def print_terminal(csv_path: Path) -> None:
     for row in rows:
         typer.echo(row)
 
+
 """
 We used AI to format the table of the CSV
 """
