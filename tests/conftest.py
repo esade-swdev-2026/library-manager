@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from library_manager import cli
-from library_manager.book_class import Book
+from library_manager.book import Book
 from library_manager.library import Library
 
 

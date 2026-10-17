@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from library_manager.book_class import Book
+from library_manager.book import Book
 
 
 def load_books(csv_path: Path) -> list[Book]:

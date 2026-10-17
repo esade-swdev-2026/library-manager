@@ -25,4 +25,4 @@ def test_return_command_saves_the_return(books_csv: Path) -> None:
 def test_bad_input_exits_with_error(books_csv: Path) -> None:
     result = runner.invoke(app, ["borrow", "Harry Potter"])
     assert result.exit_code == 1
-    assert "Book not available" in result.stderr
+    assert "Book not found" in result.stderr

@@ -23,12 +23,12 @@ def test_borrow_ignores_case(library: Library, today: date) -> None:
 
 
 def test_borrow_unknown_book_fails(library: Library, today: date) -> None:
-    with pytest.raises(ValueError, match="Book not available"):
+    with pytest.raises(ValueError, match="Book not found"):
         library.borrow("Harry Potter", today)
 
 
 def test_failed_borrow_leaves_book_unchanged(library: Library, today: date) -> None:
-    with pytest.raises(ValueError, match="No existences available"):
+    with pytest.raises(ValueError, match="No copies available"):
         library.borrow("Dune", today)
 
     book = library.find("Dune")

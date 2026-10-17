@@ -1,6 +1,6 @@
 from datetime import date
 
-from library_manager.book_class import Book
+from library_manager.book import Book
 
 
 def make_book(quantity: int, due_date: date | None) -> Book:

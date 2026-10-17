@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from library_manager.book_class import Book
+from library_manager.book import Book
 
 LOAN_DAYS = 30
 
@@ -22,9 +22,9 @@ class Library:
     def borrow(self, name: str, today: date) -> None:
         book = self.find(name)
         if book is None:
-            raise ValueError("Book not available")
+            raise ValueError("Book not found")
         if not book.is_available():
-            raise ValueError("No existences available")
+            raise ValueError("No copies available")
 
         book.quantity -= 1
         book.due_date = today + timedelta(days=LOAN_DAYS)
@@ -32,7 +32,7 @@ class Library:
     def return_book(self, name: str, today: date) -> bool:
         book = self.find(name)
         if book is None:
-            raise ValueError("Book not available")
+            raise ValueError("Book not found")
         if book.due_date is None:
             raise ValueError("This book is not borrowed")
 

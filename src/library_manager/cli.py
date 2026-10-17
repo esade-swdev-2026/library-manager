@@ -3,14 +3,14 @@ from pathlib import Path
 
 import typer
 
-from library_manager.interface import print_terminal
+from library_manager.interface import format_books_table
 from library_manager.library import Library
 from library_manager.storage import load_books, save_books
 
 app = typer.Typer(help="A terminal library manager.")
 
 # csv: name, author, quantity, genre, language, description, due_date
-BOOKS_CSV = Path(__file__).parent / "books-2.csv"
+BOOKS_CSV = Path(__file__).parent / "books.csv"
 
 
 @app.callback()
@@ -19,10 +19,11 @@ def main() -> None:
 
 
 @app.command()
-def borrow(book: str) -> None:
+def borrow(book_name: str) -> None:
+    """Borrow a copy of a book."""
     library = Library(load_books(BOOKS_CSV))
     try:
-        library.borrow(book, date.today())
+        library.borrow(book_name, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
@@ -31,10 +32,11 @@ def borrow(book: str) -> None:
 
 
 @app.command("return")
-def return_book(book: str) -> None:
+def return_book(book_name: str) -> None:
+    """Return a borrowed book and tell whether it is late."""
     library = Library(load_books(BOOKS_CSV))
     try:
-        late = library.return_book(book, date.today())
+        late = library.return_book(book_name, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
@@ -48,7 +50,12 @@ def return_book(book: str) -> None:
 
 @app.command("show")
 def show() -> None:
-    print_terminal(BOOKS_CSV)
+    """Show every book in the library."""
+    table = format_books_table(load_books(BOOKS_CSV))
+    header, *rows = table.splitlines()
+    typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
+    for row in rows:
+        typer.echo(row)
 
 
 if __name__ == "__main__":

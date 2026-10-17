@@ -30,7 +30,7 @@ def test_return_late(library: Library, today: date) -> None:
 
 
 def test_return_unknown_book_fails(library: Library, today: date) -> None:
-    with pytest.raises(ValueError, match="Book not available"):
+    with pytest.raises(ValueError, match="Book not found"):
         library.return_book("Harry Potter", today)
 
 
