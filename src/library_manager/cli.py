@@ -58,5 +58,26 @@ def show() -> None:
         typer.echo(row)
 
 
+@app.command("menu")
+def menu() -> None:
+    while True:
+        typer.echo("\n1) Show books\n2) Borrow a book\n3) Return a book\n4) Exit")
+        choice = typer.prompt("Choose an option")
+        try:
+            if choice == "1":
+                show()
+            elif choice == "2":
+                borrow(typer.prompt("Book name"))
+            elif choice == "3":
+                return_book(typer.prompt("Book name"))
+            elif choice == "4":
+                typer.echo("Goodbye!")
+                break
+            else:
+                typer.echo("Invalid option, choose 1-4")
+        except typer.Exit:
+            typer.echo("Please try again.")
+
+
 if __name__ == "__main__":
     app()
