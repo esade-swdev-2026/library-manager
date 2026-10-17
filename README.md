@@ -26,6 +26,7 @@ uv run library-manager --help
 uv run library-manager show
 uv run library-manager borrow "Fahrenheit 451"
 uv run library-manager return "Fahrenheit 451"
+uv run library-manager menu    # interactive: show, borrow and return from one place
 ```
 
 Book names are not case sensitive. If the book does not exist, has no copies left or was
