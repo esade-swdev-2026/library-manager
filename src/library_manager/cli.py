@@ -61,6 +61,7 @@ def show() -> None:
 # this just prints the menu, so it has no tests
 @app.command("menu")
 def menu() -> None:
+    """Open an interactive menu to show, borrow and return books."""
     while True:
         typer.echo("\n1) Show books\n2) Borrow a book\n3) Return a book\n4) Exit")
         choice = typer.prompt("Choose an option")
