@@ -58,6 +58,7 @@ def show() -> None:
         typer.echo(row)
 
 
+# this just prints the menu, so it has no tests
 @app.command("menu")
 def menu() -> None:
     while True:
