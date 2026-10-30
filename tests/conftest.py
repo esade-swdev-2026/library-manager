@@ -19,6 +19,7 @@ def library(today: date) -> Library:
         [
             Book("1984", "George Orwell", 1, "Dystopian", "English", "A man rebels.", None),
             Book("Dune", "Frank Herbert", 0, "Sci-Fi", "English", "A desert planet.", None),
+            Book("Animal Farm", "George Orwell", 5, "Classic", "English", "Farm animals.", None),
             Book("Emma", "Jane Austen", 0, "Romance", "English", "Matchmaking.", date(2026, 11, 1)),
             Book("Dracula", "Bram Stoker", 1, "Horror", "English", "A vampire.", date(2026, 10, 1)),
             Book("Ulysses", "James Joyce", 0, "Modernist", "English", "A day in Dublin.", today),
