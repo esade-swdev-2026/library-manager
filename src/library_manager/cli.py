@@ -57,6 +57,15 @@ def show() -> None:
     for row in rows:
         typer.echo(row)
 
+@app.command("due_date")
+def due_date(book_name: str) -> None:
+    """Show the due date of a given book."""
+    library = Library(load_books(BOOKS_CSV))
+    try:
+        typer.echo(library.show_due_date(book_name))
+    except ValueError as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(code=1) from error
 
 # this just prints the menu, so it has no tests
 @app.command("menu")
