@@ -26,3 +26,15 @@ def test_bad_input_exits_with_error(books_csv: Path) -> None:
     result = runner.invoke(app, ["borrow", "Harry Potter"])
     assert result.exit_code == 1
     assert "Book not found" in result.stderr
+
+
+def test_filter_command_lists_matching_books(books_csv: Path) -> None:
+    result = runner.invoke(app, ["filter", "English"])
+    assert result.exit_code == 0
+    assert "1984" in result.stdout
+
+
+def test_filter_command_with_no_matches_exits_with_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["filter", "French"])
+    assert result.exit_code == 1
+    assert "No books found" in result.stdout
