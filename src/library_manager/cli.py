@@ -57,8 +57,9 @@ def show() -> None:
     for row in rows:
         typer.echo(row)
 
+
 @app.command("description")
-def description(book_name: str) -> None: 
+def description(book_name: str) -> None:
     """Show the description of a given book."""
     library = Library(load_books(BOOKS_CSV))
     try:
@@ -89,8 +90,6 @@ def menu() -> None:
                 typer.echo("Invalid option, choose 1-4")
         except typer.Exit:
             typer.echo("Please try again.")
-
-
 
 
 if __name__ == "__main__":
