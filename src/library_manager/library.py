@@ -40,3 +40,9 @@ class Library:
         book.quantity += 1
         book.due_date = None
         return late
+
+    def show_book_description(self, name: str) -> str:
+        book = self.find(name)
+        if book is not None:
+            return book.description
+        raise ValueError("Book does not exist")
