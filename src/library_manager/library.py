@@ -10,6 +10,8 @@ def find_book(books: list[Book], name: str) -> Book | None:
         if book.name.lower() == name.lower():
             return book
     return None
+
+
 def filter_by_language(books: list[Book], language: str) -> list[Book]:
     return [book for book in books if book.language.lower() == language.lower()]
 

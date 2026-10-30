@@ -56,6 +56,8 @@ def show() -> None:
     typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
     for row in rows:
         typer.echo(row)
+
+
 @app.command("filter")
 def filter_books(language: str) -> None:
     """Show every book in a given language."""
@@ -68,6 +70,7 @@ def filter_books(language: str) -> None:
     typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
     for row in rows:
         typer.echo(row)
+
 
 # this just prints the menu, so it has no tests
 @app.command("menu")
