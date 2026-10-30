@@ -41,7 +41,7 @@ class Library:
         book.due_date = None
         return late
 
-def show_due_date(self, name: str) -> str:
+    def show_due_date(self, name: str) -> date | None:
         book = self.find(name)
         if book is not None:
             return book.due_date
