@@ -21,3 +21,11 @@ def test_filter_by_language_ignores_case(library: Library) -> None:
 
 def test_filter_by_language_returns_empty_for_no_match(library: Library) -> None:
     assert library.filter_by_language("French") == []
+
+
+def test_show_book_description_ignores_case(library: Library) -> None:
+    assert library.show_book_description("dUNE") == "A desert planet."
+
+
+def test_show_description_of_borrowed_book(library: Library) -> None:
+    assert library.show_book_description("Emma") == "Matchmaking."
