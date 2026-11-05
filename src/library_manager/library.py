@@ -17,9 +17,16 @@ def find_book_by_author(books: list[Book], author: str) -> list[Book] | None:
     return books_matches or None
 
 
+def filter_by_language(books: list[Book], language: str) -> list[Book]:
+    return [book for book in books if book.language.lower() == language.lower()]
+
+
 class Library:
     def __init__(self, books: list[Book]) -> None:
         self.books = books
+
+    def filter_by_language(self, language: str) -> list[Book]:
+        return filter_by_language(self.books, language)
 
     def find(self, name: str) -> Book | None:
         return find_book(self.books, name)
@@ -48,3 +55,9 @@ class Library:
         book.quantity += 1
         book.due_date = None
         return late
+
+    def show_book_description(self, name: str) -> str:
+        book = self.find(name)
+        if book is not None:
+            return book.description
+        raise ValueError("Book does not exist")

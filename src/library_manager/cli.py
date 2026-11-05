@@ -58,6 +58,31 @@ def show() -> None:
         typer.echo(row)
 
 
+@app.command("filter")
+def filter_books(language: str) -> None:
+    """Show every book in a given language."""
+    books = Library(load_books(BOOKS_CSV)).filter_by_language(language)
+    if not books:
+        typer.echo(f"No books found in {language}")
+        raise typer.Exit(code=1)
+    table = format_books_table(books)
+    header, *rows = table.splitlines()
+    typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
+    for row in rows:
+        typer.echo(row)
+
+
+@app.command("description")
+def description(book_name: str) -> None:
+    """Show the description of a given book."""
+    library = Library(load_books(BOOKS_CSV))
+    try:
+        typer.echo(library.show_book_description(book_name))
+    except ValueError as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(code=1) from error
+
+
 # this just prints the menu, so it has no tests
 @app.command("menu")
 def menu() -> None:
