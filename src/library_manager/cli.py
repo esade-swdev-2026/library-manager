@@ -48,6 +48,19 @@ def return_book(book_name: str) -> None:
         typer.echo("Thank you for returning the book on time!")
 
 
+@app.command("renew")
+def renew(book_name: str) -> None:
+    """Renew a loan before its due date for another 30 days."""
+    library = Library(load_books(BOOKS_CSV))
+    try:
+        new_due_date = library.renew(book_name, date.today())
+    except ValueError as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(code=1) from error
+    save_books(BOOKS_CSV, library.books)
+    typer.echo(f"Loan renewed. New due date: {new_due_date.isoformat()}")
+
+
 @app.command("show")
 def show() -> None:
     """Show every book in the library."""
