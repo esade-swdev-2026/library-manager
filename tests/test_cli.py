@@ -1,8 +1,10 @@
+from datetime import date, timedelta
 from pathlib import Path
 
 from typer.testing import CliRunner
 
 from library_manager.cli import app
+from library_manager.library import LOAN_DAYS
 from library_manager.storage import load_books
 
 runner = CliRunner()
@@ -20,6 +22,20 @@ def test_return_command_saves_the_return(books_csv: Path) -> None:
     assert result.exit_code == 0
     assert "You returned the book late, you will be fined" in result.stdout
     assert load_books(books_csv)[3].quantity == 2
+
+
+def test_renew_command_saves_the_new_due_date(books_csv: Path) -> None:
+    result = runner.invoke(app, ["renew", "Emma"])
+    new_due_date = date.today() + timedelta(days=LOAN_DAYS)
+    assert result.exit_code == 0
+    assert f"Loan renewed. New due date: {new_due_date.isoformat()}" in result.stdout
+    assert load_books(books_csv)[2].due_date == new_due_date
+
+
+def test_renew_overdue_loan_exits_with_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["renew", "Dracula"])
+    assert result.exit_code == 1
+    assert "Loan is overdue" in result.stderr
 
 
 def test_bad_input_exits_with_error(books_csv: Path) -> None:
