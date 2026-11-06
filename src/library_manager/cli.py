@@ -72,6 +72,20 @@ def filter_books(language: str) -> None:
         typer.echo(row)
 
 
+@app.command("filter-genre")
+def filter_books_by_genre(genre: str) -> None:
+    """Show every book of a given genre."""
+    books = Library(load_books(BOOKS_CSV)).filter_by_genre(genre)
+    if not books:
+        typer.echo(f"No books found in {genre}")
+        raise typer.Exit(code=1)
+    table = format_books_table(books)
+    header, *rows = table.splitlines()
+    typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
+    for row in rows:
+        typer.echo(row)
+
+
 @app.command("description")
 def description(book_name: str) -> None:
     """Show the description of a given book."""
