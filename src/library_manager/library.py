@@ -56,6 +56,18 @@ class Library:
         book.due_date = None
         return late
 
+    def renew(self, name: str, today: date) -> date:
+        book = self.find(name)
+        if book is None:
+            raise ValueError("Book not found")
+        if book.due_date is None:
+            raise ValueError("This book is not borrowed")
+        if book.is_overdue(today):
+            raise ValueError("Loan is overdue, please return the book")
+
+        book.due_date = today + timedelta(days=LOAN_DAYS)
+        return book.due_date
+
     def show_book_description(self, name: str) -> str:
         book = self.find(name)
         if book is not None:

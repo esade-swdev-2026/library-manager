@@ -1,8 +1,8 @@
 # library-manager
 
 A terminal library manager designed for one user. It lets you see the books in the
-library, borrow a copy of a book for 30 days and return it, telling you if you returned it
-late.
+library, borrow a copy of a book for 30 days, renew the loan before it is due and return it,
+telling you if you returned it late.
 
 ## Install
 
@@ -25,12 +25,13 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 uv run library-manager --help
 uv run library-manager show
 uv run library-manager borrow "Fahrenheit 451"
+uv run library-manager renew "Fahrenheit 451"     # 30 more days, only before the due date
 uv run library-manager return "Fahrenheit 451"
 uv run library-manager menu    # interactive: show, borrow and return from one place
 ```
 
-Book names are not case sensitive. If the book does not exist, has no copies left or was
-not borrowed, the program prints a message and exits with code 1.
+Book names are not case sensitive. If the book does not exist, has no copies left, was
+not borrowed or is overdue when renewing, the program prints a message and exits with code 1.
 
 The books are stored in `src/library_manager/books.csv`, with the columns
 `name,author,quantity,genre,language,description,due_date`. `quantity` is the number of
@@ -57,7 +58,7 @@ If they pass here, CI passes. To run all of them at once:
 ```
 src/library_manager/   the package — importable, installable, not just a script
   cli.py               the typer command-line interface (reads, saves and prints)
-  library.py           borrowing and returning rules
+  library.py           borrowing, renewing and returning rules
   book.py              the Book dataclass
   storage.py           loads and saves the books CSV
   interface.py         formats the books as a table
