@@ -39,6 +39,18 @@ def test_filter_by_language_returns_empty_for_no_match(library: Library) -> None
     assert library.filter_by_language("French") == []
 
 
+def test_filter_by_genre_returns_matching_books(library: Library) -> None:
+    assert [book.name for book in library.filter_by_genre("Dystopian")] == ["1984"]
+
+
+def test_filter_by_genre_ignores_case(library: Library) -> None:
+    assert library.filter_by_genre("dYSTOPIAN") == library.filter_by_genre("Dystopian")
+
+
+def test_filter_by_genre_returns_empty_for_no_match(library: Library) -> None:
+    assert library.filter_by_genre("Western") == []
+
+
 def test_show_book_description_ignores_case(library: Library) -> None:
     assert library.show_book_description("dUNE") == "A desert planet."
 

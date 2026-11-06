@@ -38,3 +38,16 @@ def test_filter_command_with_no_matches_exits_with_error(books_csv: Path) -> Non
     result = runner.invoke(app, ["filter", "French"])
     assert result.exit_code == 1
     assert "No books found" in result.stdout
+
+
+def test_filter_genre_command_lists_matching_books(books_csv: Path) -> None:
+    result = runner.invoke(app, ["filter-genre", "Horror"])
+    assert result.exit_code == 0
+    assert "Dracula" in result.stdout
+    assert "1984" not in result.stdout
+
+
+def test_filter_genre_command_with_no_matches_exits_with_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["filter-genre", "Western"])
+    assert result.exit_code == 1
+    assert "No books found" in result.stdout
