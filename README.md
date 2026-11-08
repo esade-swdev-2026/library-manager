@@ -44,6 +44,7 @@ uv run ruff check .          # lint
 uv run ruff format .         # format (CI runs `--check` and fails on a diff)
 uv run mypy src tests        # types
 uv run pytest                # tests
+All eight backlog features (register, search, filters, borrow, renew, return...) are covered by tests in `tests/`.
 ```
 
 These four commands are exactly what `.github/workflows/check.yml` runs on every push.
@@ -68,3 +69,14 @@ scripts/check.sh       runs the four checks
 tests/                 pytest tests, mirroring src/
 pyproject.toml         dependencies and tool configuration — the single source of truth
 ```
+## Features
+
+- **Register** — create a user account to use the library manager.
+- **Show available books** — list all books currently in the library.
+- **Preview a book** — see its description, author, summary and current availability.
+- **Search** — find books by title and/or author.
+- **Filter by genre** — narrow the book list down to a genre.
+- **Filter by language** — narrow the book list down to a language (Spanish, French, Catalan, English, ...).
+- **Borrow** — borrow a copy of a book for 30 days.
+- **Renew** — extend the due date before it expires, so you don't have to return a book you haven't finished.
+- **Return** — give back a borrowed book; tells you if it was returned late.
