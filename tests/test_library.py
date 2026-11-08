@@ -1,5 +1,6 @@
 import pytest
 
+from library_manager.book import Book
 from library_manager.library import Library
 
 
@@ -45,3 +46,13 @@ def test_show_book_description_ignores_case(library: Library) -> None:
 
 def test_show_description_of_borrowed_book(library: Library) -> None:
     assert library.show_book_description("Emma") == "Matchmaking."
+
+
+def test_filter_by_unexisting_genre_returns_empty_list(library: Library) -> None:
+    assert len(library.filter_by_genre("Unexisting_genre")) == 0
+
+
+def test_filter_by_genre_is_not_case_sensitive(library: Library) -> None:
+    result = [Book("1984", "George Orwell", 1, "Dystopian", "English", "A man rebels.", None)]
+    assert library.filter_by_genre("Dystopian") == library.filter_by_genre("dYstOpiAn")
+    assert library.filter_by_genre("dYstOpiAn") == result
