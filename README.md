@@ -25,7 +25,7 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 uv run library-manager --help
 uv run library-manager show
 uv run library-manager borrow "Fahrenheit 451"
-uv run library-manager renew "Fahrenheit 451"     # 30 more days, only before the due date
+uv run library-manager renew "Fahrenheit 451"     # due 30 days from today, only before the due date
 uv run library-manager return "Fahrenheit 451"
 uv run library-manager menu    # interactive: show, borrow and return from one place
 ```

@@ -38,6 +38,12 @@ def test_renew_overdue_loan_exits_with_error(books_csv: Path) -> None:
     assert "Loan is overdue" in result.stderr
 
 
+def test_renew_book_not_borrowed_exits_with_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["renew", "1984"])
+    assert result.exit_code == 1
+    assert "This book is not borrowed" in result.stderr
+
+
 def test_bad_input_exits_with_error(books_csv: Path) -> None:
     result = runner.invoke(app, ["borrow", "Harry Potter"])
     assert result.exit_code == 1
