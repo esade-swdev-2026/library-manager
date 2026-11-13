@@ -34,13 +34,28 @@ uv run library-manager locsv my_books.csv         # use your own books csv from 
 Book names are not case sensitive. If the book does not exist, has no copies left, was
 not borrowed or is overdue when renewing, the program prints a message and exits with code 1.
 
-The books are stored in `src/library_manager/example_books.csv`, with the columns
+The books are stored in `data/example_books.csv`, with the columns
 `name,author,quantity,genre,language,description,due_date`. `quantity` is the number of
 copies left and `due_date` is empty when the book is not borrowed.
 
 To use your own books instead, run `locsv` with the path to a csv that has the same
 columns. The path is saved in `~/.library_manager`, so every later command uses that csv;
 delete that file to go back to the example books.
+
+## Run with Docker
+
+```bash
+docker build -t library-manager .
+docker run --rm library-manager --help
+docker run --rm -v library-manager-data:/app/data library-manager borrow "Dune"
+docker run --rm -v library-manager-data:/app/data library-manager show
+docker run --rm -it -v library-manager-data:/app/data library-manager menu
+```
+
+The books live in the named volume `library-manager-data`, mounted on `/app/data`: the first
+time it is used, Docker fills it with `data/example_books.csv`, and every loan or return is
+saved there, so it survives `docker rm`. `docker volume rm library-manager-data` deletes it
+and starts again from the example books.
 
 ## Develop
 
