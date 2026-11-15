@@ -37,5 +37,6 @@ def books_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "Emma,Jane Austen,0,Romance,English,A young matchmaker meddles in love.,2099-01-01\n"
         "Dracula,Bram Stoker,1,Horror,English,A vampire travels to England.,2000-01-01\n"
     )
-    monkeypatch.setattr(cli, "BOOKS_CSV", path)
+    monkeypatch.setattr(cli, "DEFAULT_BOOKS_CSV", path)
+    monkeypatch.setattr(cli, "CONFIG_FILE", tmp_path / "config")
     return path

@@ -28,14 +28,19 @@ uv run library-manager borrow "Fahrenheit 451"
 uv run library-manager renew "Fahrenheit 451"     # due 30 days from today, only before the due date
 uv run library-manager return "Fahrenheit 451"
 uv run library-manager menu    # interactive: show, borrow and return from one place
+uv run library-manager locsv my_books.csv         # use your own books csv from now on
 ```
 
 Book names are not case sensitive. If the book does not exist, has no copies left, was
 not borrowed or is overdue when renewing, the program prints a message and exits with code 1.
 
-The books are stored in `src/library_manager/books.csv`, with the columns
+The books are stored in `src/library_manager/example_books.csv`, with the columns
 `name,author,quantity,genre,language,description,due_date`. `quantity` is the number of
 copies left and `due_date` is empty when the book is not borrowed.
+
+To use your own books instead, run `locsv` with the path to a csv that has the same
+columns. The path is saved in `~/.library_manager`, so every later command uses that csv;
+delete that file to go back to the example books.
 
 ## Develop
 
@@ -63,7 +68,7 @@ src/library_manager/   the package — importable, installable, not just a scrip
   book.py              the Book dataclass
   storage.py           loads and saves the books CSV
   interface.py         formats the books as a table
-  books.csv            the library's books
+  example_books.csv    the library's books
   __main__.py          lets `python -m library_manager` work
 scripts/check.sh       runs the four checks
 tests/                 pytest tests, mirroring src/

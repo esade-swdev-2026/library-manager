@@ -60,3 +60,24 @@ def test_filter_command_with_no_matches_exits_with_error(books_csv: Path) -> Non
     result = runner.invoke(app, ["filter", "French"])
     assert result.exit_code == 1
     assert "No books found" in result.stdout
+
+
+def test_locsv_makes_later_commands_use_the_own_csv(books_csv: Path, tmp_path: Path) -> None:
+    own_csv = tmp_path / "own_books.csv"
+    own_csv.write_text(books_csv.read_text())
+
+    assert runner.invoke(app, ["locsv", str(own_csv)]).exit_code == 0
+    assert runner.invoke(app, ["borrow", "1984"]).exit_code == 0
+
+    assert load_books(own_csv)[0].quantity == 0
+    assert load_books(books_csv)[0].quantity == 1
+
+
+def test_locsv_with_missing_file_exits_with_error_and_keeps_default(
+    books_csv: Path, tmp_path: Path
+) -> None:
+    result = runner.invoke(app, ["locsv", str(tmp_path / "missing.csv")])
+    assert result.exit_code == 1
+
+    assert runner.invoke(app, ["borrow", "1984"]).exit_code == 0
+    assert load_books(books_csv)[0].quantity == 0

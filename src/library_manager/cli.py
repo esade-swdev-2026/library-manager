@@ -10,7 +10,29 @@ from library_manager.storage import load_books, save_books
 app = typer.Typer(help="A terminal library manager.")
 
 # csv: name, author, quantity, genre, language, description, due_date
-BOOKS_CSV = Path(__file__).parent / "books.csv"
+DEFAULT_BOOKS_CSV = Path(__file__).parent / "example_books.csv"
+# remembers the csv chosen with `locsv`, because every command runs in a new process
+CONFIG_FILE = Path.home() / ".library_manager"
+
+
+def books_csv_path() -> Path:
+    """The csv chosen with `locsv`, or the example one if none was chosen."""
+    if CONFIG_FILE.exists():
+        return Path(CONFIG_FILE.read_text().strip())
+    return DEFAULT_BOOKS_CSV
+
+
+@app.command("locsv")
+def load_own_csv(csv_path: Path) -> None:
+    """Use your own books csv instead of the example one."""
+    csv_path = csv_path.expanduser().resolve()
+    try:
+        load_books(csv_path)
+    except (OSError, ValueError, KeyError) as error:
+        typer.echo(f"Could not load {csv_path}: {error}", err=True)
+        raise typer.Exit(code=1) from error
+    CONFIG_FILE.write_text(str(csv_path))
+    typer.echo(f"{csv_path} loaded successfully")
 
 
 @app.callback()
@@ -21,26 +43,26 @@ def main() -> None:
 @app.command()
 def borrow(book_name: str) -> None:
     """Borrow a copy of a book."""
-    library = Library(load_books(BOOKS_CSV))
+    library = Library(load_books(books_csv_path()))
     try:
         library.borrow(book_name, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
-    save_books(BOOKS_CSV, library.books)
+    save_books(books_csv_path(), library.books)
     typer.echo("You have successfully borrowed the book")
 
 
 @app.command("return")
 def return_book(book_name: str) -> None:
     """Return a borrowed book and tell whether it is late."""
-    library = Library(load_books(BOOKS_CSV))
+    library = Library(load_books(books_csv_path()))
     try:
         late = library.return_book(book_name, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
-    save_books(BOOKS_CSV, library.books)
+    save_books(books_csv_path(), library.books)
 
     if late:
         typer.echo("You returned the book late, you will be fined")
@@ -51,20 +73,20 @@ def return_book(book_name: str) -> None:
 @app.command("renew")
 def renew(book_name: str) -> None:
     """Renew a loan before its due date for another 30 days."""
-    library = Library(load_books(BOOKS_CSV))
+    library = Library(load_books(books_csv_path()))
     try:
         new_due_date = library.renew(book_name, date.today())
     except ValueError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(code=1) from error
-    save_books(BOOKS_CSV, library.books)
+    save_books(books_csv_path(), library.books)
     typer.echo(f"Loan renewed. New due date: {new_due_date.isoformat()}")
 
 
 @app.command("show")
 def show() -> None:
     """Show every book in the library."""
-    table = format_books_table(load_books(BOOKS_CSV))
+    table = format_books_table(load_books(books_csv_path()))
     header, *rows = table.splitlines()
     typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
     for row in rows:
@@ -74,7 +96,7 @@ def show() -> None:
 @app.command("filter")
 def filter_books(language: str) -> None:
     """Show every book in a given language."""
-    books = Library(load_books(BOOKS_CSV)).filter_by_language(language)
+    books = Library(load_books(books_csv_path())).filter_by_language(language)
     if not books:
         typer.echo(f"No books found in {language}")
         raise typer.Exit(code=1)
@@ -88,7 +110,7 @@ def filter_books(language: str) -> None:
 @app.command("gfilter")
 def filter_books_by_genre(genre: str) -> None:
     """Show every book for a given genre."""
-    books = Library(load_books(BOOKS_CSV)).filter_by_genre(genre)
+    books = Library(load_books(books_csv_path())).filter_by_genre(genre)
     if not books:
         typer.echo(f"No books found for {genre}")
         raise typer.Exit(code=1)
@@ -102,7 +124,7 @@ def filter_books_by_genre(genre: str) -> None:
 @app.command("description")
 def description(book_name: str) -> None:
     """Show the description of a given book."""
-    library = Library(load_books(BOOKS_CSV))
+    library = Library(load_books(books_csv_path()))
     try:
         typer.echo(library.show_book_description(book_name))
     except ValueError as error:
