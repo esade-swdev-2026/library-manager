@@ -16,5 +16,6 @@ COPY --chown=app:app data ./data
 USER app
 
 ENV PATH="/app/.venv/bin:$PATH"
+ENV LIBRARY_MANAGER_CONFIG=/app/data/.library_manager
 ENTRYPOINT ["library-manager"]
 CMD ["--help"]

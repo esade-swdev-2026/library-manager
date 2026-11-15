@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from pathlib import Path
 
@@ -12,7 +13,8 @@ app = typer.Typer(help="A terminal library manager.")
 # csv: name, author, quantity, genre, language, description, due_date
 DEFAULT_BOOKS_CSV = Path(__file__).resolve().parents[2] / "data" / "example_books.csv"
 # remembers the csv chosen with `locsv`, because every command runs in a new process
-CONFIG_FILE = Path.home() / ".library_manager"
+# LIBRARY_MANAGER_CONFIG lets containers keep it in a persistent volume
+CONFIG_FILE = Path(os.environ.get("LIBRARY_MANAGER_CONFIG", Path.home() / ".library_manager"))
 
 
 def books_csv_path() -> Path:
