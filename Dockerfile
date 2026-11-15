@@ -9,8 +9,7 @@ COPY README.md LICENSE ./
 COPY src ./src
 RUN uv sync --locked --no-dev
 
-<<<<<<< HEAD
-RUN useradd --create-home app && mkdir /app/data && chown app:app /app/data
+
 # data/ holds the committed books the app starts from, and it is the only folder
 # the app writes to; a named volume on /app/data keeps the changes after the container is gone
 RUN useradd --create-home app
