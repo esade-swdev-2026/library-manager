@@ -134,12 +134,32 @@ def description(book_name: str) -> None:
         raise typer.Exit(code=1) from error
 
 
-# this just prints the menu, so it has no tests
+@app.command("afilter")
+def filter_books_by_author(author: str) -> None:
+    """Show every book for a given author."""
+    books = Library(load_books(books_csv_path())).find_by_author(author)
+    if not books:
+        typer.echo(f"No books found for {author}")
+        raise typer.Exit(code=1)
+    table = format_books_table(books)
+    header, *rows = table.splitlines()
+    typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
+    for row in rows:
+        typer.echo(row)
+
+
+MENU_OPTIONS = (
+    "\n1) Show books\n2) Borrow a book\n3) Return a book\n4) Renew a loan"
+    "\n5) Filter by genre\n6) Filter by language\n7) Filter by author"
+    "\n8) Book description\n9) Exit"
+)
+
+
 @app.command("menu")
 def menu() -> None:
-    """Open an interactive menu to show, borrow and return books."""
+    """Open an interactive menu to use every command from one place."""
     while True:
-        typer.echo("\n1) Show books\n2) Borrow a book\n3) Return a book\n4) Exit")
+        typer.echo(MENU_OPTIONS)
         choice = typer.prompt("Choose an option")
         try:
             if choice == "1":
@@ -149,10 +169,20 @@ def menu() -> None:
             elif choice == "3":
                 return_book(typer.prompt("Book name"))
             elif choice == "4":
+                renew(typer.prompt("Book name"))
+            elif choice == "5":
+                filter_books_by_genre(typer.prompt("Genre"))
+            elif choice == "6":
+                filter_books(typer.prompt("Language"))
+            elif choice == "7":
+                filter_books_by_author(typer.prompt("Author name"))
+            elif choice == "8":
+                description(typer.prompt("Book name"))
+            elif choice == "9":
                 typer.echo("Goodbye!")
                 break
             else:
-                typer.echo("Invalid option, choose 1-4")
+                typer.echo("Invalid option, choose 1-9")
         except typer.Exit:
             typer.echo("Please try again.")
 

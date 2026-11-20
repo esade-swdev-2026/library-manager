@@ -62,6 +62,49 @@ def test_filter_command_with_no_matches_exits_with_error(books_csv: Path) -> Non
     assert "No books found" in result.stdout
 
 
+def test_afilter_command_lists_books_by_author(books_csv: Path) -> None:
+    result = runner.invoke(app, ["afilter", "george orwell"])
+    assert result.exit_code == 0
+    assert "1984" in result.stdout
+    assert "Dune" not in result.stdout
+
+
+def test_afilter_command_with_no_matches_exits_with_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["afilter", "Unknown Author"])
+    assert result.exit_code == 1
+    assert "No books found" in result.stdout
+
+
+def test_menu_exits_with_goodbye(books_csv: Path) -> None:
+    result = runner.invoke(app, ["menu"], input="9\n")
+    assert result.exit_code == 0
+    assert "Goodbye!" in result.stdout
+
+
+def test_menu_shows_books(books_csv: Path) -> None:
+    result = runner.invoke(app, ["menu"], input="1\n9\n")
+    assert "Dracula" in result.stdout
+
+
+def test_menu_borrows_a_book(books_csv: Path) -> None:
+    result = runner.invoke(app, ["menu"], input="2\n1984\n9\n")
+    assert "You have successfully borrowed the book" in result.stdout
+    assert load_books(books_csv)[0].quantity == 0
+
+
+def test_menu_rejects_invalid_option(books_csv: Path) -> None:
+    result = runner.invoke(app, ["menu"], input="42\n9\n")
+    assert "Invalid option, choose 1-9" in result.stdout
+
+
+def test_menu_keeps_running_after_an_error(books_csv: Path) -> None:
+    result = runner.invoke(app, ["menu"], input="2\nHarry Potter\n9\n")
+    assert result.exit_code == 0
+    assert "Book not found" in result.stderr
+    assert "Please try again." in result.stdout
+    assert "Goodbye!" in result.stdout
+
+
 def test_locsv_makes_later_commands_use_the_own_csv(books_csv: Path, tmp_path: Path) -> None:
     own_csv = tmp_path / "own_books.csv"
     own_csv.write_text(books_csv.read_text())
