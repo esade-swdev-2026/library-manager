@@ -127,3 +127,14 @@ pyproject.toml         dependencies and tool configuration — the single source
 - **Borrow** — borrow a copy of a book for 30 days.
 - **Renew** — extend the due date before it expires, so you don't have to return a book you haven't finished.
 - **Return** — give back a borrowed book; tells you if it was returned late.
+
+
+## Use of Artificial Intelligence
+
+- **Understanding** — At the start of the project, we used AI to help us understand functions like `find_book` and `find_book_by_author` and what they were used for, before coding them ourselves.
+- **Commands & Prompts** — When we got stuck and forgot the exact command for a specific action, we asked the AI for it so we could solve the problem efficiently.
+- **Books CSV** — To create our sample dataset, we used AI to generate a list of real existing books with their corresponding author, in the correct table format (name, author, quantity, language, description).
+- **Writing Tests** — AI helped us write some of the more repetitive tests, once we understood the pattern and had coded several of them ourselves.
+- **Shell Tests** — AI also helped us write tests for our shell scripts, such as checking that a given string is returned unchanged.
+- **Edge Cases** — AI helped us identify edge cases for our tests that we hadn't initially considered.
+- **PR and Docker Issues** — We also used AI when our PR wasn't updating correctly and when we had issues with the Dockerfile. It suggested commands such as `git checkout main`, `git pull`, and `git fetch --prune` to fix the syncing problems between our branch and the PR.
