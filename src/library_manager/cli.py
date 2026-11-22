@@ -24,6 +24,16 @@ def books_csv_path() -> Path:
     return DEFAULT_BOOKS_CSV
 
 
+def load_library() -> Library:
+    """The books from the chosen csv, or a clear message and exit code 1."""
+    csv_path = books_csv_path()
+    try:
+        return Library(load_books(csv_path))
+    except (OSError, ValueError, KeyError) as error:
+        typer.echo(f"Could not load {csv_path}: {error}", err=True)
+        raise typer.Exit(code=1) from error
+
+
 @app.command("locsv")
 def load_own_csv(csv_path: Path) -> None:
     """Use your own books csv instead of the example one."""
@@ -45,7 +55,7 @@ def main() -> None:
 @app.command()
 def borrow(book_name: str) -> None:
     """Borrow a copy of a book."""
-    library = Library(load_books(books_csv_path()))
+    library = load_library()
     try:
         library.borrow(book_name, date.today())
     except ValueError as error:
@@ -58,7 +68,7 @@ def borrow(book_name: str) -> None:
 @app.command("return")
 def return_book(book_name: str) -> None:
     """Return a borrowed book and tell whether it is late."""
-    library = Library(load_books(books_csv_path()))
+    library = load_library()
     try:
         late = library.return_book(book_name, date.today())
     except ValueError as error:
@@ -75,7 +85,7 @@ def return_book(book_name: str) -> None:
 @app.command("renew")
 def renew(book_name: str) -> None:
     """Renew a loan before its due date for another 30 days."""
-    library = Library(load_books(books_csv_path()))
+    library = load_library()
     try:
         new_due_date = library.renew(book_name, date.today())
     except ValueError as error:
@@ -88,7 +98,7 @@ def renew(book_name: str) -> None:
 @app.command("show")
 def show() -> None:
     """Show every book in the library."""
-    table = format_books_table(load_books(books_csv_path()))
+    table = format_books_table(load_library().books)
     header, *rows = table.splitlines()
     typer.echo(typer.style(header, fg=typer.colors.CYAN, bold=True))
     for row in rows:
@@ -98,7 +108,7 @@ def show() -> None:
 @app.command("filter")
 def filter_books(language: str) -> None:
     """Show every book in a given language."""
-    books = Library(load_books(books_csv_path())).filter_by_language(language)
+    books = load_library().filter_by_language(language)
     if not books:
         typer.echo(f"No books found in {language}")
         raise typer.Exit(code=1)
@@ -112,7 +122,7 @@ def filter_books(language: str) -> None:
 @app.command("gfilter")
 def filter_books_by_genre(genre: str) -> None:
     """Show every book for a given genre."""
-    books = Library(load_books(books_csv_path())).filter_by_genre(genre)
+    books = load_library().filter_by_genre(genre)
     if not books:
         typer.echo(f"No books found for {genre}")
         raise typer.Exit(code=1)
@@ -126,7 +136,7 @@ def filter_books_by_genre(genre: str) -> None:
 @app.command("description")
 def description(book_name: str) -> None:
     """Show the description of a given book."""
-    library = Library(load_books(books_csv_path()))
+    library = load_library()
     try:
         typer.echo(library.show_book_description(book_name))
     except ValueError as error:
@@ -137,7 +147,7 @@ def description(book_name: str) -> None:
 @app.command("afilter")
 def filter_books_by_author(author: str) -> None:
     """Show every book for a given author."""
-    books = Library(load_books(books_csv_path())).find_by_author(author)
+    books = load_library().find_by_author(author)
     if not books:
         typer.echo(f"No books found for {author}")
         raise typer.Exit(code=1)

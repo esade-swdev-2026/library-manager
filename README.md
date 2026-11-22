@@ -27,12 +27,18 @@ uv run library-manager show
 uv run library-manager borrow "Fahrenheit 451"
 uv run library-manager renew "Fahrenheit 451"     # due 30 days from today, only before the due date
 uv run library-manager return "Fahrenheit 451"
-uv run library-manager menu    # interactive: show, borrow and return from one place
+uv run library-manager filter Spanish             # books in a language
+uv run library-manager gfilter "Science Fiction"  # books of a genre
+uv run library-manager afilter "Jane Austen"      # books by an author
+uv run library-manager description "Dune"         # what a book is about
+uv run library-manager menu    # interactive: every command above from one place
 uv run library-manager locsv my_books.csv         # use your own books csv from now on
 ```
 
-Book names are not case sensitive. If the book does not exist, has no copies left, was
-not borrowed or is overdue when renewing, the program prints a message and exits with code 1.
+Book names, languages, genres and authors are not case sensitive. If the book does not
+exist, has no copies left, was not borrowed or is overdue when renewing, or a filter finds
+no books, the program prints a message and exits with code 1. The same happens if the csv
+saved with `locsv` no longer exists or is missing a column.
 
 The books are stored in `data/example_books.csv`, with the columns
 `name,author,quantity,genre,language,description,due_date`. `quantity` is the number of
@@ -46,8 +52,19 @@ image sets it to `/app/data/.library_manager`).
 
 ## Run with Docker
 
+Every merge to `main` and every version tag publishes the image to GHCR. The package is
+private, so log in with a GitHub token that has `read:packages`, pull it and give it the
+short name the commands below use:
+
 ```bash
-docker build -t library-manager .
+docker login ghcr.io
+docker pull ghcr.io/esade-swdev-2026/library-manager:v1.0
+docker tag ghcr.io/esade-swdev-2026/library-manager:v1.0 library-manager
+```
+
+Or build it yourself from the repo with `docker build -t library-manager .`. Either way:
+
+```bash
 docker run --rm library-manager --help
 docker run --rm -v library-manager-data:/app/data library-manager borrow "Dune"
 docker run --rm -v library-manager-data:/app/data library-manager show
@@ -90,8 +107,6 @@ uv run ruff format .         # format (CI runs `--check` and fails on a diff)
 uv run mypy src tests        # types
 uv run pytest                # tests
 ```
-All eight backlog features (register, search, filters, borrow, renew, return...) are covered by tests in `tests/`.
-
 
 These four commands are exactly what `.github/workflows/check.yml` runs on every push.
 If they pass here, CI passes. To run all of them at once:
@@ -118,15 +133,16 @@ pyproject.toml         dependencies and tool configuration — the single source
 ```
 ## Features
 
-- **Register** — create a user account to use the library manager.
-- **Show available books** — list all books currently in the library.
-- **Preview a book** — see its description, author, summary and current availability.
-- **Search** — find books by title and/or author.
-- **Filter by genre** — narrow the book list down to a genre.
-- **Filter by language** — narrow the book list down to a language (Spanish, French, Catalan, English, ...).
-- **Borrow** — borrow a copy of a book for 30 days.
-- **Renew** — extend the due date before it expires, so you don't have to return a book you haven't finished.
-- **Return** — give back a borrowed book; tells you if it was returned late.
+- **Show available books** (`show`) — list all books in the library with their copies left.
+- **Book description** (`description`) — see what a book is about.
+- **Search by author** (`afilter`) — list every book by an author.
+- **Filter by genre** (`gfilter`) — narrow the book list down to a genre.
+- **Filter by language** (`filter`) — narrow the book list down to a language (Spanish, French, Catalan, English, ...).
+- **Borrow** (`borrow`) — borrow a copy of a book for 30 days.
+- **Renew** (`renew`) — extend the due date before it expires, so you don't have to return a book you haven't finished.
+- **Return** (`return`) — give back a borrowed book; tells you if it was returned late.
+- **Your own books** (`locsv`) — use your own csv instead of the example one.
+- **Menu** (`menu`) — show, borrow, return, renew, filter and read descriptions from one interactive menu.
 
 
 ## Use of Artificial Intelligence
